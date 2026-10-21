@@ -1,0 +1,94 @@
+:root {
+  --krem: #fff8f1;
+  --krem-2: #f6ebdd;
+  --teks: #3b2620;
+  --teks-2: #6b4a3f;
+  --kraft: #c89b6d;
+  --kraft-gelap: #a87d52;
+  --kraft-terang: #d9b48a;
+  --gelap: #1e1411;
+  --gelap-2: #2b1d18;
+  --pink: #f2a7b8;
+  --hijau: #3e6b35;
+  --kuning: #f6d77a;
+
+  --font-judul: 'Bagel Fat One', system-ui, sans-serif;
+  --font-isi: 'Poppins', system-ui, sans-serif;
+  /* Catatan tulisan tangan, dipakai hemat untuk anotasi. */
+  --font-tangan: 'Gochi Hand', 'Comic Sans MS', cursive;
+
+  --r-kecil: 10px;
+  --r-kartu: 22px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --lebar: 1120px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: var(--krem);
+  color: var(--teks);
+  font-family: var(--font-isi);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-judul);
+  font-weight: 400;
+  line-height: 1.05;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--hijau);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+main {
+  overflow-x: clip;
+}
+
+.wrap {
+  width: min(100% - var(--gutter) * 2, var(--lebar));
+  margin-inline: auto;
+}
+

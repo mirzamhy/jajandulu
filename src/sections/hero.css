@@ -1,0 +1,229 @@
+.hero {
+  position: relative;
+}
+
+.hero-pin {
+  height: 100svh;
+  min-height: 600px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(20px, 4vh, 40px) var(--gutter) clamp(16px, 3vh, 28px);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Canvas 3D memenuhi seluruh area pin, teks berada di atasnya. */
+.hero-kanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y;
+  cursor: grab;
+  z-index: 0;
+}
+
+.hero-kanvas:active {
+  cursor: grabbing;
+}
+
+.hero-title {
+  text-align: center;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-title h1 {
+  font-size: clamp(54px, 10vw, 112px);
+  color: var(--krem);
+  text-shadow: 0 4px 0 #6b3a2a;
+}
+
+.hero-slogan {
+  font-style: italic;
+  font-size: clamp(16px, 2.2vw, 20px);
+  color: var(--pink);
+}
+
+.hero-sub {
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.55;
+  opacity: 0.8;
+}
+
+.hero-geser {
+  position: absolute;
+  left: 50%;
+  top: 71%;
+  translate: -50% 0;
+  font-family: var(--font-tangan);
+  font-size: 21px;
+  color: var(--kuning);
+  white-space: nowrap;
+  visibility: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-captions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 70%;
+  display: grid;
+  justify-items: center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-cap {
+  grid-area: 1 / 1;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  visibility: hidden;
+}
+
+.hero-cap-nama {
+  font-family: var(--font-judul);
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1;
+}
+
+.hero-cap-asal {
+  font-size: 15px;
+  opacity: 0.75;
+  max-width: 30ch;
+}
+
+/* Info seri di bawah kantong. */
+.hero-info {
+  grid-row: 3;
+  grid-column: 1;
+  align-self: end;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: clamp(16px, 5vw, 56px);
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-info div {
+  display: grid;
+  align-content: start;
+}
+
+.hero-info dt {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.hero-info dd {
+  margin: 0;
+  font-size: clamp(13px, 1.6vw, 16px);
+  font-weight: 500;
+}
+
+.hero-strip {
+  grid-row: 3;
+  grid-column: 1;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(4px, 1.5vw, 16px);
+  width: min(100%, 640px);
+  visibility: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.strip-slot {
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+
+.strip-charm {
+  position: relative;
+  width: clamp(44px, 10vw, 70px);
+  aspect-ratio: 1;
+}
+
+.strip-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.strip-color {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+
+.strip-nama {
+  font-size: clamp(11px, 1.6vw, 13px);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .hero-sub {
+    font-size: 14px;
+    max-width: 30ch;
+  }
+
+  .hero-info {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+/* Versi tanpa animasi (prefers-reduced-motion). */
+.hero.is-statis .hero-pin {
+  height: auto;
+  min-height: 0;
+  gap: 28px;
+  grid-template-rows: auto 60svh auto auto;
+}
+
+.hero.is-statis .hero-kanvas {
+  position: relative;
+  grid-row: 2;
+  inset: auto;
+}
+
+.hero.is-statis .hero-title h1 {
+  color: var(--teks);
+  text-shadow: 0 4px 0 var(--pink);
+}
+
+.hero.is-statis .hero-slogan {
+  color: var(--hijau);
+}
+
+.hero.is-statis .hero-strip {
+  grid-row: 4;
+}
+
+.hero.is-statis .hero-strip,
+.hero.is-statis .strip-color {
+  visibility: visible;
+}
