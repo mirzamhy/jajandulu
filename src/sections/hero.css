@@ -31,7 +31,7 @@
 .hero-title {
   text-align: center;
   display: grid;
-  gap: 6px;
+  gap: 4px;
   justify-items: center;
   position: relative;
   z-index: 1;
@@ -42,6 +42,19 @@
   font-size: clamp(54px, 10vw, 112px);
   color: var(--krem);
   text-shadow: 0 4px 0 #6b3a2a;
+}
+
+/* logo balon 3D menggantikan judul teks; h1 tetap ada untuk pembaca layar lewat alt gambar */
+.hero-logo {
+  line-height: 0;
+  margin-bottom: 2px;
+}
+
+.hero-logo img {
+  /* ukuran dibatasi tinggi layar juga: kantong 3D selalu di tengah, blok judul harus selesai sebelum tutupnya */
+  width: min(clamp(150px, 19vw, 250px), 26vh);
+  height: auto;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
 }
 
 .hero-slogan {

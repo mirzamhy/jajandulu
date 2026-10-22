@@ -6,6 +6,7 @@ import { bukaModal } from '../components/hash'
 import { FotoCharm } from '../components/FotoCharm'
 import { buatAdegan, type Adegan } from '../three/adegan'
 import { tungguFont } from '../three/tekstur'
+import logo from '../assets/logo-jajandulu.webp'
 import './hero.css'
 
 const KREM = '#FFF8F1'
@@ -158,7 +159,9 @@ export function Hero({ statis }: { statis: boolean }) {
         {!gagal && <canvas ref={kanvas} className="hero-kanvas" aria-label="Blind bag Jajan Dulu! dalam 3D. Geser untuk memutar charm." />}
 
         <header className="hero-title">
-          <h1 id="hero-judul">Jajan Dulu!</h1>
+          <h1 id="hero-judul" className="hero-logo">
+            <img src={logo} alt="Jajan Dulu!" width={800} height={545} fetchPriority="high" />
+          </h1>
           <p className="hero-slogan">Collect it. Taste the story.</p>
           <p className="hero-sub">Bag charm flanel bentuk jajanan pasar, dijahit tangan, dibungkus kantong kertas tertutup.</p>
         </header>
