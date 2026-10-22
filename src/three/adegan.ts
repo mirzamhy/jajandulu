@@ -109,6 +109,17 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
     kamera.updateProjectionMatrix()
   }
 
+  // Pergantian charm: charm baru "meletup" dari kecil dengan sedikit memantul, jadi tidak terasa potong langsung.
+  let aktifSebelum = ''
+  let sejakGanti = 1
+  const LAMA_LETUP = 0.42
+  const letup = (t: number) => {
+    if (t >= LAMA_LETUP) return 1
+    const p = t / LAMA_LETUP - 1
+    const s = 2.2
+    return 0.5 + 0.5 * (1 + (s + 1) * p * p * p + s * p * p)
+  }
+
   let terakhir = performance.now()
   const render = () => {
     const now = performance.now()
@@ -139,6 +150,12 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
 
     const idx = Math.round(S.tampil)
     const aktif = idx < 0 ? 'secret' : URUTAN[Math.min(idx, URUTAN.length - 1)]
+    if (aktif !== aktifSebelum) {
+      // tidak meletup saat halaman baru dibuka, hanya saat berganti karakter
+      sejakGanti = aktifSebelum ? 0 : LAMA_LETUP
+      aktifSebelum = aktif
+    }
+    sejakGanti += dt
     for (const [id, c] of Object.entries(charms)) c.grup.visible = id === aktif
     if (aktif !== 'secret') charms[aktif].setWarna(S.warna)
 
@@ -147,6 +164,8 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
     // Charm di dalam kantong ikut berputar bersama kantong selama idle.
     pemutar.rotation.y = S.charmPutar + tangan.y + (S.charmY < 1.2 ? putarKantong : 0)
     pemutar.rotation.x = tangan.x
+    const k = letup(sejakGanti)
+    pemutar.scale.set(k, k * (1 + 0.06 * Math.sin(Math.min(1, sejakGanti / LAMA_LETUP) * Math.PI)), k)
 
     renderer.render(scene, kamera)
   }
@@ -187,6 +206,13 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
   const ro = new ResizeObserver(resize)
   ro.observe(canvas)
   resize()
+
+  // Siapkan semua charm di depan: shader dikompilasi dan geometri dikirim ke GPU sekarang, bukan saat charm
+  // pertama kali muncul (itu yang membuat pergantian karakter tersendat).
+  Object.values(charms).forEach((c) => (c.grup.visible = true))
+  renderer.compile(scene, kamera)
+  renderer.render(scene, kamera)
+  Object.values(charms).forEach((c) => (c.grup.visible = false))
 
   return {
     S,

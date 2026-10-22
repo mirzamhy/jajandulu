@@ -6,6 +6,7 @@
 // `peta: true`: warna badan dipudarkan dan tiap jenis jahitan diberi warna penanda, untuk lembar desain.
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { acak, buatRing, R_RING, TABUNG, type MatWarna } from './charm'
 import { teksturFlanel, tinggiFlanel } from './tekstur'
 
@@ -859,12 +860,43 @@ function serabi(ctx: Ctx) {
   return g
 }
 
+/**
+ * Satukan semua potongan benang (TubeGeometry) yang memakai bahan sama jadi satu mesh. Satu charm punya ratusan
+ * tusuk feston dan jelujur; tanpa ini tiap tusuk satu draw call dan web tersendat saat charm berganti.
+ */
+function gabungkanBenang(akar: THREE.Group) {
+  akar.updateMatrixWorld(true)
+  const balik = akar.matrixWorld.clone().invert()
+  const kelompok = new Map<THREE.Material, THREE.Mesh[]>()
+  akar.traverse((o) => {
+    const m = o as THREE.Mesh
+    if (!m.isMesh || (m as THREE.InstancedMesh).isInstancedMesh || Array.isArray(m.material)) return
+    if (!(m.geometry instanceof THREE.TubeGeometry)) return
+    const daftar = kelompok.get(m.material) ?? []
+    daftar.push(m)
+    kelompok.set(m.material, daftar)
+  })
+  for (const [bahan, daftar] of kelompok) {
+    if (daftar.length < 2) continue
+    const geo = mergeGeometries(daftar.map((m) => m.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(balik, m.matrixWorld))))
+    if (!geo) continue
+    daftar.forEach((m) => {
+      m.removeFromParent()
+      m.geometry.dispose()
+    })
+    const satu = new THREE.Mesh(geo, bahan)
+    satu.castShadow = true
+    akar.add(satu)
+  }
+}
+
 const PEMBUAT: Record<CharmRajutId, (ctx: Ctx) => THREE.Group> = { klepon, 'onde-onde': ondeOnde, 'kue-lapis': lapis, 'kue-lumpur': lumpur, serabi }
 
 /** Model charm rajut. Pusat badan di titik asal, depan +Z, ring di atas (puncak ring ±y 1,28). */
 export function buatCharmRajut(id: CharmRajutId, opsi: { peta?: boolean; daftar?: MatWarna[] } = {}) {
   const ctx: Ctx = { daftar: opsi.daftar ?? [], peta: !!opsi.peta }
   const grup = PEMBUAT[id](ctx)
+  gabungkanBenang(grup)
   grup.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) o.castShadow = true
   })
