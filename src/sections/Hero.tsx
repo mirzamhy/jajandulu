@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { VARIAN } from '../data/varian'
 import { HARGA, rupiah } from '../data/kontak'
 import { gsap, ScrollTrigger } from '../motion/setup'
@@ -56,7 +56,7 @@ export function Hero({ statis }: { statis: boolean }) {
           scrollTrigger: {
             trigger: root.current,
             start: 'top top',
-            end: () => (window.innerWidth < 720 ? '+=460%' : '+=600%'),
+            end: () => (window.innerWidth < 720 ? '+=760%' : '+=950%'),
             pin: '.hero-pin',
             scrub: 0.8,
             invalidateOnRefresh: true,
@@ -87,20 +87,21 @@ export function Hero({ statis }: { statis: boolean }) {
 
         // 4. Lima karakter terungkap: siluet berganti bentuk sambil berputar, lalu warna mengisi.
         const mulai = 4.1
-        const jeda = 1.3
+        // tiap karakter: berputar masuk (±1,2), lalu diam sebentar supaya sempat dilihat sebelum berganti
+        const jeda = 2.2
         tl.to('.hero-geser', { autoAlpha: 0, duration: 0.3 }, mulai)
         VARIAN.forEach((v, i) => {
           const t = mulai + i * jeda
           tl.to(S, { tampil: i, duration: 0.01, ease: 'none' }, t)
-            .fromTo(S, { warna: 0 }, { warna: 1, duration: 0.6, ease: 'power1.out' }, t + 0.25)
-            .to(S, { charmPutar: `+=${PUTARAN}`, duration: 0.85, ease: 'power2.out' }, t)
-            .fromTo(`.hero-cap-${v.id}`, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.35 }, t + 0.3)
-            .to(`.hero-cap-${v.id}`, { autoAlpha: 0, y: -10, duration: 0.3 }, t + 1.0)
+            .fromTo(S, { warna: 0 }, { warna: 1, duration: 0.8, ease: 'power1.out' }, t + 0.3)
+            .to(S, { charmPutar: `+=${PUTARAN}`, duration: 1.3, ease: 'power2.out' }, t)
+            .fromTo(`.hero-cap-${v.id}`, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4 }, t + 0.4)
+            .to(`.hero-cap-${v.id}`, { autoAlpha: 0, y: -10, duration: 0.35 }, t + jeda - 0.4)
             .fromTo(
               `.strip-color-${v.id}`,
               { autoAlpha: 0, scale: 0.6 },
               { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' },
-              t + 1.05,
+              t + 1.2,
             )
         })
 
@@ -113,11 +114,11 @@ export function Hero({ statis }: { statis: boolean }) {
 
           // 5. Yang terakhir tetap rahasia.
           .to(S, { tampil: -1, duration: 0.01, ease: 'none' }, akhir)
-          .to(S, { charmPutar: `+=${PUTARAN}`, duration: 0.85, ease: 'power2.out' }, akhir)
+          .to(S, { charmPutar: `+=${PUTARAN}`, duration: 1.3, ease: 'power2.out' }, akhir)
           .fromTo('.hero-cap-secret', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4 }, akhir + 0.2)
           .to('.strip-secret', { scale: 1.12, duration: 0.3, ease: 'back.out(2)' }, akhir + 0.2)
           .to('.strip-secret', { scale: 1, duration: 0.3 }, akhir + 0.55)
-          .to({}, { duration: 0.6 })
+          .to({}, { duration: 1.2 })
       }, root)
       ScrollTrigger.refresh()
     })

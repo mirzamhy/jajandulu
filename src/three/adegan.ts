@@ -112,7 +112,7 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
   // Pergantian charm: charm baru "meletup" dari kecil dengan sedikit memantul, jadi tidak terasa potong langsung.
   let aktifSebelum = ''
   let sejakGanti = 1
-  const LAMA_LETUP = 0.42
+  const LAMA_LETUP = 0.6
   const letup = (t: number) => {
     if (t >= LAMA_LETUP) return 1
     const p = t / LAMA_LETUP - 1
