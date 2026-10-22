@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import logoUrl from '../assets/logo-jajandulu.webp'
 
 function kanvas(w: number, h: number) {
   const c = document.createElement('canvas')
@@ -152,44 +153,64 @@ export function teksturKraft() {
 }
 
 /** Sisi depan kantong: kraft dengan label krem dan logo. Butuh font sudah dimuat. */
+/** Isi stiker label kantong: seri di atas, logo balon di tengah, ajakan di bawah. Tanpa logo: tulisan teks. */
+function gambarLabel(g: CanvasRenderingContext2D, W: number, H: number, logo: HTMLImageElement | null) {
+  const kraft = teksturKraft().image as HTMLCanvasElement
+  g.drawImage(kraft, 0, 0, W, H)
+  // Lipatan dasar.
+  g.fillStyle = 'rgba(0,0,0,0.06)'
+  g.fillRect(0, H * 0.91, W, H * 0.09)
+  g.fillStyle = 'rgba(60,35,15,0.25)'
+  g.fillRect(0, H * 0.91, W, 2)
+
+  g.save()
+  g.translate(W / 2, H * 0.6)
+  g.rotate(-0.035)
+  const lw = W * 0.7
+  const lh = H * 0.42
+  g.fillStyle = '#FFF8F1'
+  g.beginPath()
+  g.roundRect(-lw / 2, -lh / 2, lw, lh, 14)
+  g.fill()
+  g.textAlign = 'center'
+  g.fillStyle = '#6B4A3F'
+  g.font = '500 20px Poppins, sans-serif'
+  g.fillText('Seri 01 · Jajanan Pasar', 0, -lh / 2 + 34)
+  if (logo) {
+    const lh2 = lh * 0.6
+    const lw2 = (lh2 * logo.naturalWidth) / logo.naturalHeight
+    g.drawImage(logo, -lw2 / 2, -lh / 2 + 46, lw2, lh2)
+  } else {
+    g.fillStyle = '#3B2620'
+    g.font = '72px "Bagel Fat One", sans-serif'
+    g.fillText('JAJAN', 0, -8)
+    g.fillText('DULU!', 0, 62)
+  }
+  g.fillStyle = '#3E6B35'
+  g.font = '30px "Gochi Hand", cursive'
+  g.fillText('siapa yang kamu dapat?', 0, lh / 2 - 18)
+  g.restore()
+}
+
 export function teksturLabel() {
   return simpan('label', () => {
     const W = 512
     const H = 640
     const [c, g] = kanvas(W, H)
-    const kraft = teksturKraft().image as HTMLCanvasElement
-    g.drawImage(kraft, 0, 0, W, H)
-    // Lipatan dasar.
-    g.fillStyle = 'rgba(0,0,0,0.06)'
-    g.fillRect(0, H * 0.91, W, H * 0.09)
-    g.fillStyle = 'rgba(60,35,15,0.25)'
-    g.fillRect(0, H * 0.91, W, 2)
-
-    g.save()
-    g.translate(W / 2, H * 0.6)
-    g.rotate(-0.035)
-    const lw = W * 0.7
-    const lh = H * 0.42
-    g.fillStyle = '#FFF8F1'
-    g.beginPath()
-    g.roundRect(-lw / 2, -lh / 2, lw, lh, 14)
-    g.fill()
-    g.textAlign = 'center'
-    g.fillStyle = '#6B4A3F'
-    g.font = '500 20px Poppins, sans-serif'
-    g.fillText('Seri 01 · Jajanan Pasar', 0, -lh / 2 + 42)
-    g.fillStyle = '#3B2620'
-    g.font = '72px "Bagel Fat One", sans-serif'
-    g.fillText('JAJAN', 0, -8)
-    g.fillText('DULU!', 0, 62)
-    g.fillStyle = '#3E6B35'
-    g.font = '30px "Gochi Hand", cursive'
-    g.fillText('siapa yang kamu dapat?', 0, lh / 2 - 22)
-    g.restore()
-
+    gambarLabel(g, W, H, null)
     const t = new THREE.CanvasTexture(c)
     t.colorSpace = THREE.SRGBColorSpace
     t.anisotropy = 4
+    // logo balon digambar ulang begitu gambarnya selesai dimuat
+    const img = new Image()
+    const selesai = () => {}
+    img.onload = () => {
+      gambarLabel(g, W, H, img)
+      t.needsUpdate = true
+      selesai()
+    }
+    img.onerror = () => selesai()
+    img.src = logoUrl
     return t
   })
 }
