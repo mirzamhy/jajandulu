@@ -87,25 +87,42 @@ export function Hero({ statis }: { statis: boolean }) {
 
         // 4. Lima karakter terungkap: siluet berganti bentuk sambil berputar, lalu warna mengisi.
         const mulai = 4.1
-        // tiap karakter: berputar masuk (±1,2), lalu diam sebentar supaya sempat dilihat sebelum berganti
-        const jeda = 2.2
+        // Tanpa jeda: charm berputar terus mengikuti scroll, satu putaran per karakter. Pergantian karakter terjadi
+        // saat charm menghadap samping (tiga perempat putaran), jadi tampak seperti satu charm yang berubah wujud,
+        // dan karakter baru langsung berputar ke depan tepat saat namanya muncul.
+        const jeda = 1.8
         tl.to('.hero-geser', { autoAlpha: 0, duration: 0.3 }, mulai)
+        const urutan = [...VARIAN.map((v) => v.id), 'secret']
+        const ganti: number[] = []
+        let t = mulai
+        urutan.forEach((_, k) => {
+          const pertama = k === 0
+          const terakhir = k === urutan.length - 1
+          // putaran pertama mulai pelan, putaran terakhir (rahasia) melambat sampai berhenti menghadap depan
+          const lama = pertama ? jeda * 1.3 : terakhir ? jeda * 1.5 : jeda
+          const ease = pertama ? 'power1.in' : terakhir ? 'power1.out' : 'none'
+          tl.to(S, { charmPutar: `+=${PUTARAN}`, duration: lama, ease }, t)
+          // waktu tiga perempat putaran untuk tiap ease (power1 = kuadrat)
+          const tigaPerempat = pertama ? Math.sqrt(0.75) : terakhir ? 0.5 : 0.75
+          ganti.push(t + lama * tigaPerempat)
+          t += lama
+        })
         VARIAN.forEach((v, i) => {
-          const t = mulai + i * jeda
-          tl.to(S, { tampil: i, duration: 0.01, ease: 'none' }, t)
-            .fromTo(S, { warna: 0 }, { warna: 1, duration: 0.8, ease: 'power1.out' }, t + 0.3)
-            .to(S, { charmPutar: `+=${PUTARAN}`, duration: 1.3, ease: 'power2.out' }, t)
-            .fromTo(`.hero-cap-${v.id}`, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4 }, t + 0.4)
-            .to(`.hero-cap-${v.id}`, { autoAlpha: 0, y: -10, duration: 0.35 }, t + jeda - 0.4)
+          const g = ganti[i]
+          const sampai = ganti[i + 1]
+          tl.to(S, { tampil: i, duration: 0.01, ease: 'none' }, g)
+            .fromTo(S, { warna: 0 }, { warna: 1, duration: jeda * 0.4, ease: 'power1.out' }, g)
+            .fromTo(`.hero-cap-${v.id}`, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.3 }, g + 0.15)
+            .to(`.hero-cap-${v.id}`, { autoAlpha: 0, y: -10, duration: 0.25 }, sampai - 0.3)
             .fromTo(
               `.strip-color-${v.id}`,
               { autoAlpha: 0, scale: 0.6 },
               { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' },
-              t + 1.2,
+              g + jeda * 0.5,
             )
         })
 
-        const akhir = mulai + VARIAN.length * jeda
+        const akhir = ganti[VARIAN.length]
         const fase = (akhir - mulai) / 3
         tl.to(root.current, { backgroundColor: COKELAT, duration: fase, ease: 'none' }, mulai)
           .to(root.current, { backgroundColor: KRAFT, duration: fase, ease: 'none' }, mulai + fase)
@@ -114,11 +131,10 @@ export function Hero({ statis }: { statis: boolean }) {
 
           // 5. Yang terakhir tetap rahasia.
           .to(S, { tampil: -1, duration: 0.01, ease: 'none' }, akhir)
-          .to(S, { charmPutar: `+=${PUTARAN}`, duration: 1.3, ease: 'power2.out' }, akhir)
           .fromTo('.hero-cap-secret', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4 }, akhir + 0.2)
           .to('.strip-secret', { scale: 1.12, duration: 0.3, ease: 'back.out(2)' }, akhir + 0.2)
           .to('.strip-secret', { scale: 1, duration: 0.3 }, akhir + 0.55)
-          .to({}, { duration: 1.2 })
+          .to({}, { duration: 1.0 }, t)
       }, root)
       ScrollTrigger.refresh()
     })

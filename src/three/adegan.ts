@@ -117,7 +117,8 @@ export function buatAdegan(canvas: HTMLCanvasElement) {
     if (t >= LAMA_LETUP) return 1
     const p = t / LAMA_LETUP - 1
     const s = 2.2
-    return 0.5 + 0.5 * (1 + (s + 1) * p * p * p + s * p * p)
+    // pergantian terjadi saat charm menghadap samping, jadi letupannya cukup halus
+    return 0.88 + 0.12 * (1 + (s + 1) * p * p * p + s * p * p)
   }
 
   let terakhir = performance.now()
